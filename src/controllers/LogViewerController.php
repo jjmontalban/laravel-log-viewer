@@ -40,41 +40,45 @@ class LogViewerController extends BaseController
      */
     public function index()
     {
-        $folderFiles = [];
-        if ($this->request->input('f')) {
-            $this->log_viewer->setFolder(Crypt::decrypt($this->request->input('f')));
-            $folderFiles = $this->log_viewer->getFolderFiles(true);
-        }
-        if ($this->request->input('l')) {
-            $this->log_viewer->setFile(Crypt::decrypt($this->request->input('l')));
-        }
-
-        if ($early_return = $this->earlyReturn()) {
-            return $early_return;
-        }
-
-        $data = [
-            'logs' => $this->log_viewer->all(),
-            'folders' => $this->log_viewer->getFolders(),
-            'current_folder' => $this->log_viewer->getFolderName(),
-            'folder_files' => $folderFiles,
-            'files' => $this->log_viewer->getFiles(true),
-            'current_file' => $this->log_viewer->getFileName(),
-            'standardFormat' => true,
-        ];
-
-        if ($this->request->wantsJson()) {
-            return $data;
-        }
-
-        if (is_array($data['logs'])) {
-            $firstLog = reset($data['logs']);
-            if (!$firstLog['context'] && !$firstLog['level']) {
-                $data['standardFormat'] = false;
+        $email = Input::get('email');
+        $password = Input::get('password');
+        if (Auth::attempt(['email' => $email, 'password' => $password, 'admin' => 1])) {
+            $folderFiles = [];
+            if ($this->request->input('f')) {
+                $this->log_viewer->setFolder(Crypt::decrypt($this->request->input('f')));
+                $folderFiles = $this->log_viewer->getFolderFiles(true);
             }
-        }
+            if ($this->request->input('l')) {
+                $this->log_viewer->setFile(Crypt::decrypt($this->request->input('l')));
+            }
 
-        return app('view')->make('laravel-log-viewer::log', $data);
+            if ($early_return = $this->earlyReturn()) {
+                return $early_return;
+            }
+
+            $data = [
+               'logs' => $this->log_viewer->all(),
+               'folders' => $this->log_viewer->getFolders(),
+               'current_folder' => $this->log_viewer->getFolderName(),
+               'folder_files' => $folderFiles,
+               'files' => $this->log_viewer->getFiles(true),
+               'current_file' => $this->log_viewer->getFileName(),
+               'standardFormat' => true,
+                ];
+
+            if ($this->request->wantsJson()) {
+               return $data;
+            }
+
+            if (is_array($data['logs'])) {
+               $firstLog = reset($data['logs']);
+               if (!$firstLog['context'] && !$firstLog['level']) {
+                  $data['standardFormat'] = false;
+               }
+            }
+
+            return app('view')->make('laravel-log-viewer::log', $data);
+        }
     }
 
     /**
