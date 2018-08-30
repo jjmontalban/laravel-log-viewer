@@ -4,10 +4,11 @@
     "license": "MIT",
     "keywords": ["log", "log-reader", "log-viewer", "logging", "laravel", "lumen"],
     "type": "laravel-package",
+    "url":"https://github.com/jjmontalban/laravel-log-viewer/",
     "authors": [
         {
-            "name": "jjmontalban",
-            "email": "jjmontalban@gmail.com"
+            "name": "Bloonde",
+            "email": "info@bloonde.com"
         }
     ],
     "require": {
